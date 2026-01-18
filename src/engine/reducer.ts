@@ -67,6 +67,31 @@ export const reduceEngineState = (
         events: [event],
       };
     }
+    case 'invoke_tool': {
+      const { event, eventCounter } = nextEvent(
+        state,
+        EngineEventType.ToolInvoked,
+        {
+          toolEventId: action.toolEvent.id,
+          toolId: action.toolEvent.toolId,
+          toolName: action.toolEvent.toolName,
+          output: action.toolEvent.output,
+          evidenceBlockIds: action.toolEvent.evidenceBlocks.map(
+            (block) => block.id,
+          ),
+        },
+        action.timestamp,
+      );
+      return {
+        state: {
+          ...state,
+          blocks: [...state.blocks, ...action.toolEvent.evidenceBlocks],
+          eventCounter,
+          runState: updateRunState(state.runState, action.timestamp),
+        },
+        events: [event],
+      };
+    }
     case 'place_block': {
       const { event, eventCounter } = nextEvent(
         state,

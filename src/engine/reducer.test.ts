@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import type { ContextBlock } from '../shared/types';
+import type { ContextBlock, ToolDefinition } from '../shared/types';
 import { reduceEngineState } from './reducer';
 import { createInitialState } from './state';
+import { simulateToolInvocation } from './toolSimulation';
 
 describe('reduceEngineState', () => {
   it('selects a ticket and emits an event', () => {
@@ -37,5 +38,31 @@ describe('reduceEngineState', () => {
       blockId: 'block-1',
     });
     expect(removed.state.blocks).toHaveLength(0);
+  });
+
+  it('invokes a tool and stores evidence blocks', () => {
+    const initial = createInitialState();
+    const tool: ToolDefinition = {
+      id: 'tool-test',
+      name: 'test',
+      outputSchema: {
+        type: 'object',
+        properties: {},
+      },
+    };
+    const toolEvent = simulateToolInvocation({
+      tool,
+      input: { suite: 'unit' },
+      seed: 'seed-3',
+    });
+
+    const { state, events } = reduceEngineState(initial, {
+      type: 'invoke_tool',
+      toolEvent,
+      timestamp: '2026-01-18T00:00:00Z',
+    });
+
+    expect(state.blocks).toHaveLength(1);
+    expect(events[0].type).toBe('tool_invoked');
   });
 });
