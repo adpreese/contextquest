@@ -1,9 +1,10 @@
-import type { ContextBlock, ModelSpec } from '../shared/types';
+import type { ContextBlock, ModelSpec, ToolEvent } from '../shared/types';
 import type { GridPosition } from './state';
 
 export type EngineAction =
   | SelectTicketAction
   | SelectModelAction
+  | InvokeToolAction
   | PlaceBlockAction
   | MoveBlockAction
   | RemoveBlockAction
@@ -23,6 +24,11 @@ export interface SelectTicketAction extends ActionMetadata {
 export interface SelectModelAction extends ActionMetadata {
   type: 'select_model';
   model: ModelSpec | null;
+}
+
+export interface InvokeToolAction extends ActionMetadata {
+  type: 'invoke_tool';
+  toolEvent: ToolEvent;
 }
 
 export interface PlaceBlockAction extends ActionMetadata {

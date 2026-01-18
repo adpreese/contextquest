@@ -99,6 +99,15 @@ export interface ToolDefinition {
   outputSchema: ToolOutputSchema;
 }
 
+export interface ToolEvent {
+  id: ID;
+  toolId: ID;
+  toolName: string;
+  input: Record<string, unknown>;
+  output: Record<string, unknown>;
+  evidenceBlocks: ContextBlock[];
+}
+
 export interface ToolInputSchema {
   type: 'object';
   properties: Record<string, ToolSchemaField>;
