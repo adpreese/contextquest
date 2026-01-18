@@ -154,10 +154,17 @@ export interface EngineEvent<TPayload = Record<string, unknown>> {
 export enum EngineEventType {
   TicketCreated = 'ticket_created',
   TicketUpdated = 'ticket_updated',
+  TicketSelected = 'ticket_selected',
+  ModelSelected = 'model_selected',
   VariantSelected = 'variant_selected',
   ToolInvoked = 'tool_invoked',
   BlockAdded = 'block_added',
+  BlockMoved = 'block_moved',
+  BlockRemoved = 'block_removed',
   ScoreComputed = 'score_computed',
+  RunStarted = 'run_started',
+  RunTicked = 'run_ticked',
+  RunCompleted = 'run_completed',
 }
 
 export interface ScoringProfile {
