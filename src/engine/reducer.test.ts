@@ -1,0 +1,41 @@
+import { describe, expect, it } from 'vitest';
+import type { ContextBlock } from '../shared/types';
+import { reduceEngineState } from './reducer';
+import { createInitialState } from './state';
+
+describe('reduceEngineState', () => {
+  it('selects a ticket and emits an event', () => {
+    const initial = createInitialState();
+    const { state, events } = reduceEngineState(initial, {
+      type: 'select_ticket',
+      ticketId: 'ticket-1',
+      timestamp: '2026-01-18T00:00:00Z',
+    });
+
+    expect(state.selectedTicketId).toBe('ticket-1');
+    expect(events).toHaveLength(1);
+    expect(events[0].type).toBe('ticket_selected');
+  });
+
+  it('places and removes a block', () => {
+    const initial = createInitialState();
+    const block: ContextBlock = {
+      id: 'block-1',
+      type: 'narrative',
+      content: 'Hello',
+    };
+
+    const placed = reduceEngineState(initial, {
+      type: 'place_block',
+      block,
+      position: { row: 0, column: 1 },
+    });
+    expect(placed.state.blocks).toHaveLength(1);
+
+    const removed = reduceEngineState(placed.state, {
+      type: 'remove_block',
+      blockId: 'block-1',
+    });
+    expect(removed.state.blocks).toHaveLength(0);
+  });
+});
