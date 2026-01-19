@@ -1,5 +1,6 @@
-import type { ContextBlock, EngineEvent } from '../shared/types';
-import { ContextBlockType, EngineEventType, UpgradeTarget } from '../shared/types';
+import type { EngineEvent } from '../shared/types';
+import { EngineEventType, UpgradeTarget } from '../shared/types';
+import { simulateToolInvocation } from './toolSimulation';
 import type { EngineAction } from './actions';
 import type { EngineState, RunState } from './state';
 
@@ -51,21 +52,28 @@ const computeOutcome = (state: EngineState): 'success' | 'partial' | 'fail' => {
   return 'partial';
 };
 
-const createToolBlock = (
-  toolName: string,
-  eventCounter: number,
-  timestamp?: string,
-): ContextBlock => ({
-  id: `tool-block-${eventCounter}`,
-  type: ContextBlockType.Tool,
-  content: `Tool output: ${toolName} cached new evidence.`,
-  width: 1,
-  height: 1,
-  fidelity: 0.9,
-  noise: 0.1,
-  tokenEstimate: 12,
-  createdAt: timestamp ?? new Date().toISOString(),
-});
+const buildToolInput = (toolName: string): Record<string, unknown> => {
+  switch (toolName.toLowerCase()) {
+    case 'domsnapshot':
+      return { url: 'app://contextquest', viewportWidth: 1280, viewportHeight: 720 };
+    case 'build':
+      return { target: 'web' };
+    case 'test':
+      return { suite: 'unit' };
+    default:
+      return {};
+  }
+};
+
+const summarizeToolOutput = (output: Record<string, unknown>): string => {
+  if (typeof output.summary === 'string') {
+    return output.summary;
+  }
+  if (typeof output.status === 'string') {
+    return `Status: ${output.status}`;
+  }
+  return 'Tool invocation completed.';
+};
 
 export const reduceEngineState = (
   state: EngineState,
@@ -142,26 +150,31 @@ export const reduceEngineState = (
       if (!tool) {
         return { state, events: [] };
       }
-      const nextCounter = state.eventCounter + 1;
+      const toolEvent = simulateToolInvocation({
+        tool,
+        input: buildToolInput(tool.name),
+        seed: `${state.eventCounter}:${tool.id}:${action.timestamp ?? ''}`,
+      });
+      const summary = summarizeToolOutput(toolEvent.output);
       const { event, eventCounter } = nextEvent(
         state,
         EngineEventType.ToolInvoked,
         {
-          toolEventId: `tool_evt_${nextCounter}`,
+          toolEventId: toolEvent.id,
           toolId: tool.id,
           toolName: tool.name,
-          output: { status: 'ok' },
-          evidenceBlockIds: [`tool-block-${nextCounter}`],
+          output: toolEvent.output,
+          summary,
+          evidenceBlockIds: toolEvent.evidenceBlocks.map((block) => block.id),
         },
         action.timestamp,
       );
-      const evidenceBlock = createToolBlock(tool.name, nextCounter, action.timestamp);
       const toolCost = state.economy.toolCost;
       const scoreGain = state.gameConfig.scorePerTool;
       return {
         state: {
           ...state,
-          blocks: [...state.blocks, evidenceBlock],
+          blocks: [...state.blocks, ...toolEvent.evidenceBlocks],
           economy: {
             ...state.economy,
             credits: Math.max(0, state.economy.credits - toolCost),
