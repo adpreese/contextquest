@@ -61,14 +61,16 @@ const eventToTimeline = (event: EngineEvent): TimelineEntry | null => {
         time: formatEventTime(event.timestamp),
         status: 'success',
       }
-    case EngineEventType.ToolInvoked:
+    case EngineEventType.ToolInvoked: {
+      const payload = event.payload as { toolName?: string; summary?: string }
       return {
         id: event.id,
-        tool: (event.payload as { toolName?: string }).toolName ?? 'tool.invoke',
-        description: 'Tool invocation dispatched.',
+        tool: payload.toolName ?? 'tool.invoke',
+        description: payload.summary ?? 'Tool invocation dispatched.',
         time: formatEventTime(event.timestamp),
         status: 'success',
       }
+    }
     default:
       return null
   }

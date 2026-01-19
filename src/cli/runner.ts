@@ -159,12 +159,32 @@ export const createCliRunner = ({ jsonOnly, log }: CliRunnerOptions = {}) => {
         });
       }
       case 'run': {
-        if (args[0] !== 'start') {
+        if (args[0] !== 'start' && args[0] !== 'complete') {
           return { ok: false, command: line, error: 'Unknown run command.' };
+        }
+        if (args[0] === 'complete') {
+          return applyAction(line, {
+            type: 'run_complete',
+            timestamp: parseTimestamp(args[1]),
+          });
         }
         return applyAction(line, {
           type: 'start_run',
           timestamp: parseTimestamp(args[1]),
+        });
+      }
+      case 'tool': {
+        if (args[0] !== 'use') {
+          return { ok: false, command: line, error: 'Unknown tool command.' };
+        }
+        const toolId = args[1];
+        if (!toolId) {
+          return { ok: false, command: line, error: 'Missing tool id.' };
+        }
+        return applyAction(line, {
+          type: 'use_tool',
+          toolId,
+          timestamp: parseTimestamp(args[2]),
         });
       }
       default:
