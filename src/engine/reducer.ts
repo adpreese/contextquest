@@ -380,6 +380,12 @@ export const reduceEngineState = (
         events: [event],
       };
     }
+    case 'load_state': {
+      return {
+        state: action.state,
+        events: [],
+      };
+    }
     default:
       return { state, events: [] };
   }
