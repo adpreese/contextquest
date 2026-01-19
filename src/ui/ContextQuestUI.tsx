@@ -2,12 +2,17 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { createInitialState } from '@/engine/state'
 import { ContextGrid } from '@/ui/ContextGrid'
+import { SaveSlotsPanel } from '@/ui/SaveSlotsPanel'
 import { SelectedPanels } from '@/ui/SelectedPanels'
 import { ToolTimeline } from '@/ui/ToolTimeline'
 import { UpgradesShop } from '@/ui/UpgradesShop'
+import { useState } from 'react'
 
 export function ContextQuestUI() {
+  const [engineState, setEngineState] = useState(() => createInitialState())
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-10">
@@ -65,6 +70,8 @@ export function ContextQuestUI() {
 
           <div className="space-y-6">
             <SelectedPanels />
+
+            <SaveSlotsPanel engineState={engineState} onLoadState={setEngineState} />
 
             <Card className="border-border/60">
               <CardHeader>
