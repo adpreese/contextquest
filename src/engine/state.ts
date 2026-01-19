@@ -1,5 +1,5 @@
 import type { ContextBlock, ModelSpec, Ticket, ToolDefinition } from '../shared/types';
-import { contextBlocks, models, tickets, tools } from '../shared/fixtures';
+import { contextBlocks, models, tickets, tools, upgradeTracks } from '../shared/fixtures';
 
 export interface GridPosition {
   row: number;
@@ -18,6 +18,14 @@ export interface EconomyState {
   toolBudget: number;
 }
 
+export interface UpgradeCatalogItem {
+  id: string;
+  title: string;
+  description: string;
+  cost: number;
+  tag: string;
+}
+
 export type RunStatus = 'idle' | 'running' | 'completed';
 
 export interface RunState {
@@ -30,8 +38,10 @@ export interface EngineState {
   tickets: Ticket[];
   grid: GridState;
   blocks: ContextBlock[];
+  models: ModelSpec[];
   model: ModelSpec | null;
   tools: ToolDefinition[];
+  upgrades: UpgradeCatalogItem[];
   economy: EconomyState;
   runState: RunState;
   eventCounter: number;
@@ -46,17 +56,27 @@ export const createInitialState = (): EngineState => ({
     placements: {},
   },
   blocks: contextBlocks,
+  models,
   model: models[0] ?? null,
   tools,
+  upgrades: upgradeTracks.flatMap((track) =>
+    track.upgrades.map((upgrade) => ({
+      id: upgrade.id,
+      title: upgrade.name,
+      description: upgrade.description ?? '',
+      cost: upgrade.cost,
+      tag: track.name,
+    })),
+  ),
   economy: {
-    credits: 0,
-    tokenBudget: 0,
-    toolBudget: 0,
+    credits: 1240,
+    tokenBudget: 82340,
+    toolBudget: 6,
   },
   runState: {
     status: 'idle',
     tick: 0,
   },
   eventCounter: 0,
-  selectedTicketId: null,
+  selectedTicketId: tickets[0]?.id ?? null,
 });

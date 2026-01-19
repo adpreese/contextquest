@@ -1,35 +1,91 @@
+import type { ModelSpec, Ticket } from '@/shared/types'
+
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 
-export function SelectedPanels() {
+type RunOutcome = 'success' | 'partial' | 'fail'
+
+interface SelectedPanelsProps {
+  tickets: Ticket[]
+  selectedTicket: Ticket | null
+  onSelectTicket: (ticketId: string) => void
+  models: ModelSpec[]
+  selectedModel: ModelSpec | null
+  onSelectModel: (model: ModelSpec | null) => void
+  runOutcome: RunOutcome | null
+  runStatus: string
+}
+
+export function SelectedPanels({
+  tickets,
+  selectedTicket,
+  onSelectTicket,
+  models,
+  selectedModel,
+  onSelectModel,
+  runOutcome,
+  runStatus,
+}: SelectedPanelsProps) {
+  const outcomeBadge =
+    runOutcome === 'success'
+      ? 'success'
+      : runOutcome === 'partial'
+        ? 'info'
+        : runOutcome === 'fail'
+          ? 'warning'
+          : 'secondary'
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Card className="border-border/60">
         <CardHeader className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <CardTitle className="text-lg">Selected Ticket</CardTitle>
-            <Badge variant="info">High priority</Badge>
+            <Badge variant="info">{selectedTicket?.status ?? 'Unassigned'}</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            Ticket 042 · "Starlight Outpost" — Converge narrative and combat goals.
+            {selectedTicket
+              ? `${selectedTicket.id} · "${selectedTicket.title}"`
+              : 'Pick a ticket to start the run.'}
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2 text-sm text-muted-foreground">
-            <p>Owner: Ada (Design Lead)</p>
-            <p>ETA: 2h 15m · Dependencies: 3</p>
-            <p>Context load: 4.8k tokens</p>
+            <p>Status: {selectedTicket?.status ?? 'None selected'}</p>
+            <p>Stage: {selectedTicket?.stage ?? 'Awaiting assignment'}</p>
+            <p>Updated: {selectedTicket?.updatedAt ?? selectedTicket?.createdAt ?? 'TBD'}</p>
           </div>
           <Separator />
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">Questline</Badge>
-            <Badge variant="secondary">Combat</Badge>
-            <Badge variant="secondary">Narrative</Badge>
-            <Badge variant="outline">Sprint 12</Badge>
+            {selectedTicket?.tags?.length ? (
+              selectedTicket.tags.map((tag) => (
+                <Badge key={tag.id} variant="secondary">
+                  {tag.label}
+                </Badge>
+              ))
+            ) : (
+              <Badge variant="outline">No tags</Badge>
+            )}
           </div>
-          <Button className="w-full">Open Ticket</Button>
+          <div className="grid gap-2">
+            <div className="flex flex-wrap gap-2">
+              {tickets.map((ticket) => (
+                <Button
+                  key={ticket.id}
+                  size="sm"
+                  variant={ticket.id === selectedTicket?.id ? 'default' : 'outline'}
+                  onClick={() => onSelectTicket(ticket.id)}
+                >
+                  {ticket.title}
+                </Button>
+              ))}
+            </div>
+            <Button className="w-full" variant="secondary">
+              Open Ticket
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -37,17 +93,21 @@ export function SelectedPanels() {
         <CardHeader className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <CardTitle className="text-lg">Selected Model</CardTitle>
-            <Badge variant="success">Online</Badge>
+            <Badge variant="success">{selectedModel ? 'Online' : 'Offline'}</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            NovaXL-4 • 128k context window • 95% tool accuracy
+            {selectedModel
+              ? `${selectedModel.name} • ${selectedModel.contextWindow?.toLocaleString() ?? 'n/a'} context window`
+              : 'Assign a model to unlock run stats.'}
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-3 text-sm text-muted-foreground">
             <div className="flex items-center justify-between">
               <span>Tokens remaining</span>
-              <span className="font-medium text-foreground">82,340</span>
+              <span className="font-medium text-foreground">
+                {selectedModel?.contextWindow?.toLocaleString() ?? '—'}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span>Latency budget</span>
@@ -61,11 +121,36 @@ export function SelectedPanels() {
           <Separator />
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>Deployment</span>
-            <span className="font-medium text-foreground">Regional Edge</span>
+            <span className="font-medium text-foreground">
+              {selectedModel?.provider ?? '—'}
+            </span>
           </div>
-          <Button variant="outline" className="w-full">
-            Swap Model
-          </Button>
+          <div className="grid gap-2">
+            <div className="flex flex-wrap gap-2">
+              {models.map((model) => (
+                <Button
+                  key={model.id}
+                  size="sm"
+                  variant={model.id === selectedModel?.id ? 'default' : 'outline'}
+                  onClick={() => onSelectModel(model)}
+                >
+                  {model.name}
+                </Button>
+              ))}
+              <Button size="sm" variant="ghost" onClick={() => onSelectModel(null)}>
+                Clear
+              </Button>
+            </div>
+            <Button variant="outline" className="w-full">
+              Swap Model
+            </Button>
+          </div>
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <span>Run status</span>
+            <Badge variant={outcomeBadge}>
+              {runOutcome ? `${runOutcome} (${runStatus})` : runStatus}
+            </Badge>
+          </div>
         </CardContent>
       </Card>
     </div>
