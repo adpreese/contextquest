@@ -128,6 +128,16 @@ export const createCliRunner = ({ jsonOnly, log }: CliRunnerOptions = {}) => {
         if (Number.isNaN(row) || Number.isNaN(column)) {
           return { ok: false, command: line, error: 'Invalid grid position.' };
         }
+        const width = 1;
+        const height = 1;
+        if (
+          row < 0 ||
+          column < 0 ||
+          row + height > state.grid.rows ||
+          column + width > state.grid.columns
+        ) {
+          return { ok: false, command: line, error: 'Block does not fit grid.' };
+        }
         blockCounter += 1;
         const blockId = `block_${blockCounter}`;
         const blockType = parseBlockType(blockTypeToken);
@@ -136,6 +146,10 @@ export const createCliRunner = ({ jsonOnly, log }: CliRunnerOptions = {}) => {
           id: blockId,
           type: blockType,
           content,
+          width,
+          height,
+          fidelity: 1,
+          noise: 0,
           createdAt: parseTimestamp(),
         };
         return applyAction(line, {

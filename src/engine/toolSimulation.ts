@@ -14,6 +14,10 @@ const buildEvidenceBlock = (
   id,
   type: ContextBlockType.Tool,
   content,
+  width: 2,
+  height: 1,
+  fidelity: 0.85,
+  noise: 0.15,
   source: toolName,
 });
 

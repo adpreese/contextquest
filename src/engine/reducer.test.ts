@@ -24,6 +24,10 @@ describe('reduceEngineState', () => {
       id: 'block-1',
       type: 'narrative',
       content: 'Hello',
+      width: 1,
+      height: 1,
+      fidelity: 1,
+      noise: 0,
     };
 
     const placed = reduceEngineState(initial, {
