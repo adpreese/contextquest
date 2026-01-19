@@ -1,4 +1,5 @@
 import type { ContextBlock, ModelSpec, Ticket, ToolDefinition } from '../shared/types';
+import { contextBlocks, models, tickets, tools } from '../shared/fixtures';
 
 export interface GridPosition {
   row: number;
@@ -38,15 +39,15 @@ export interface EngineState {
 }
 
 export const createInitialState = (): EngineState => ({
-  tickets: [],
+  tickets,
   grid: {
-    rows: 0,
-    columns: 0,
+    rows: 3,
+    columns: 4,
     placements: {},
   },
-  blocks: [],
-  model: null,
-  tools: [],
+  blocks: contextBlocks,
+  model: models[0] ?? null,
+  tools,
   economy: {
     credits: 0,
     tokenBudget: 0,
