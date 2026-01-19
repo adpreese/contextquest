@@ -6,9 +6,9 @@ describe('packContextGrid', () => {
     const result = packContextGrid(
       { rows: 2, columns: 4 },
       [
-        { id: 'block-a', width: 2, height: 1 },
-        { id: 'block-b', width: 2, height: 1 },
-        { id: 'block-c', width: 2, height: 1 },
+        { id: 'block-a', width: 2, height: 1, fidelity: 1, noise: 0 },
+        { id: 'block-b', width: 2, height: 1, fidelity: 1, noise: 0 },
+        { id: 'block-c', width: 2, height: 1, fidelity: 1, noise: 0 },
       ],
     );
 
@@ -23,7 +23,7 @@ describe('packContextGrid', () => {
   it('skips blocks that cannot fit within grid bounds', () => {
     const result = packContextGrid(
       { rows: 2, columns: 2 },
-      [{ id: 'block-a', width: 3, height: 1 }],
+      [{ id: 'block-a', width: 3, height: 1, fidelity: 1, noise: 0 }],
     );
 
     expect(result.placements).toEqual({});

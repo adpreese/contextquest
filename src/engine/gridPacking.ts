@@ -1,3 +1,4 @@
+import type { ContextBlock } from '../shared/types';
 import type { GridPosition } from './state';
 
 export interface GridDimensions {
@@ -5,13 +6,10 @@ export interface GridDimensions {
   columns: number;
 }
 
-export interface GridBlock {
-  id: string;
-  width: number;
-  height: number;
-  fidelity?: number;
-  noise?: number;
-}
+export type GridBlock = Pick<
+  ContextBlock,
+  'id' | 'width' | 'height' | 'fidelity' | 'noise'
+>;
 
 export interface CompressionOptions {
   enabled?: boolean;

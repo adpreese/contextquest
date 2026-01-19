@@ -3,6 +3,16 @@ import { EngineEventType } from '../shared/types';
 import type { EngineAction } from './actions';
 import type { EngineState, RunState } from './state';
 
+const canFitBlock = (
+  state: EngineState,
+  position: { row: number; column: number },
+  block: { width: number; height: number },
+): boolean =>
+  position.row >= 0 &&
+  position.column >= 0 &&
+  position.row + block.height <= state.grid.rows &&
+  position.column + block.width <= state.grid.columns;
+
 const nextEvent = (
   state: EngineState,
   type: EngineEventType,
@@ -93,6 +103,9 @@ export const reduceEngineState = (
       };
     }
     case 'place_block': {
+      if (!canFitBlock(state, action.position, action.block)) {
+        return { state, events: [] };
+      }
       const { event, eventCounter } = nextEvent(
         state,
         EngineEventType.BlockAdded,
@@ -117,6 +130,10 @@ export const reduceEngineState = (
       };
     }
     case 'move_block': {
+      const block = state.blocks.find((item) => item.id === action.blockId);
+      if (!block || !canFitBlock(state, action.position, block)) {
+        return { state, events: [] };
+      }
       const { event, eventCounter } = nextEvent(
         state,
         EngineEventType.BlockMoved,

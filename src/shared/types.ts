@@ -31,6 +31,10 @@ export interface ContextBlock {
   id: ID;
   type: ContextBlockType;
   content: string;
+  width: number;
+  height: number;
+  fidelity: number;
+  noise: number;
   tags?: Tag[];
   tokenEstimate?: number;
   source?: string;
