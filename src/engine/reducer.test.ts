@@ -36,13 +36,13 @@ describe('reduceEngineState', () => {
       block,
       position: { row: 0, column: 1 },
     });
-    expect(placed.state.blocks).toHaveLength(1);
+    expect(placed.state.blocks).toHaveLength(initial.blocks.length + 1);
 
     const removed = reduceEngineState(placed.state, {
       type: 'remove_block',
       blockId: 'block-1',
     });
-    expect(removed.state.blocks).toHaveLength(0);
+    expect(removed.state.blocks).toHaveLength(initial.blocks.length);
   });
 
   it('invokes a tool and stores evidence blocks', () => {
@@ -67,7 +67,7 @@ describe('reduceEngineState', () => {
       timestamp: '2026-01-18T00:00:00Z',
     });
 
-    expect(state.blocks).toHaveLength(1);
+    expect(state.blocks).toHaveLength(initial.blocks.length + 1);
     expect(events[0].type).toBe('tool_invoked');
   });
 });

@@ -6,6 +6,7 @@ import {
   closestCenter,
   useSensor,
   useSensors,
+  type DragEndEvent,
 } from '@dnd-kit/core'
 import {
   SortableContext,
@@ -101,7 +102,7 @@ export function ContextGrid({ nodes, onReorder }: ContextGridProps) {
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
-          onDragEnd={(event) => {
+          onDragEnd={(event: DragEndEvent) => {
             const { active, over } = event
             if (!over || active.id === over.id) {
               return

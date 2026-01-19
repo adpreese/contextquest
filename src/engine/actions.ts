@@ -5,6 +5,8 @@ export type EngineAction =
   | SelectTicketAction
   | SelectModelAction
   | InvokeToolAction
+  | UseToolAction
+  | PurchaseUpgradeAction
   | PlaceBlockAction
   | MoveBlockAction
   | RemoveBlockAction
@@ -30,6 +32,16 @@ export interface SelectModelAction extends ActionMetadata {
 export interface InvokeToolAction extends ActionMetadata {
   type: 'invoke_tool';
   toolEvent: ToolEvent;
+}
+
+export interface UseToolAction extends ActionMetadata {
+  type: 'use_tool';
+  toolId: string;
+}
+
+export interface PurchaseUpgradeAction extends ActionMetadata {
+  type: 'purchase_upgrade';
+  upgradeId: string;
 }
 
 export interface PlaceBlockAction extends ActionMetadata {
