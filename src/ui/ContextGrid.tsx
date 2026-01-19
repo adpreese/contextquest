@@ -20,7 +20,17 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
-const initialNodes = [
+type NodeStatus = 'Active' | 'Queued' | 'Locked'
+
+type GridNode = {
+  id: string
+  title: string
+  tokens: string
+  status: NodeStatus
+  tier: string
+}
+
+const initialNodes: GridNode[] = [
   {
     id: 'ticket-brief',
     title: 'Quest Brief',
@@ -65,13 +75,11 @@ const initialNodes = [
   },
 ]
 
-const statusVariant = {
+const statusVariant: Record<NodeStatus, 'success' | 'info' | 'warning'> = {
   Active: 'success',
   Queued: 'info',
   Locked: 'warning',
-} as const
-
-type GridNode = (typeof initialNodes)[number]
+}
 
 function SortableCard({ node }: { node: GridNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -94,9 +102,7 @@ function SortableCard({ node }: { node: GridNode }) {
         <CardHeader className="space-y-2">
           <div className="flex items-start justify-between gap-3">
             <CardTitle className="text-base">{node.title}</CardTitle>
-            <Badge
-              variant={statusVariant[node.status as keyof typeof statusVariant] || 'secondary'}
-            >
+            <Badge variant={statusVariant[node.status]}>
               {node.status}
             </Badge>
           </div>

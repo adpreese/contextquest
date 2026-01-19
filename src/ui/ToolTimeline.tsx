@@ -1,7 +1,17 @@
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-const timeline = [
+type TimelineStatus = 'success' | 'running' | 'queued'
+
+type TimelineEntry = {
+  id: string
+  tool: string
+  description: string
+  time: string
+  status: TimelineStatus
+}
+
+const timeline: TimelineEntry[] = [
   {
     id: 'run-01',
     tool: 'context.search',
@@ -32,11 +42,11 @@ const timeline = [
   },
 ]
 
-const statusStyles = {
+const statusStyles: Record<TimelineStatus, 'success' | 'info' | 'warning'> = {
   success: 'success',
   running: 'info',
   queued: 'warning',
-} as const
+}
 
 export function ToolTimeline() {
   return (
@@ -59,7 +69,7 @@ export function ToolTimeline() {
                 <div className="text-sm font-medium text-foreground">{entry.tool}</div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span>{entry.time}</span>
-                  <Badge variant={statusStyles[entry.status as keyof typeof statusStyles]}>
+                  <Badge variant={statusStyles[entry.status]}>
                     {entry.status}
                   </Badge>
                 </div>
