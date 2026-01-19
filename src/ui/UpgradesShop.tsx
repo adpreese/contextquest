@@ -1,32 +1,14 @@
+import type { UpgradeCatalogItem } from '@/engine/state'
+
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-const upgrades = [
-  {
-    id: 'upgrade-01',
-    title: 'Signal Booster',
-    description: 'Increase retrieval precision by 18% with tuned embeddings.',
-    price: '240 credits',
-    tag: 'Popular',
-  },
-  {
-    id: 'upgrade-02',
-    title: 'Rapid Recall Cache',
-    description: 'Cache 3 extra context tiles between runs.',
-    price: '180 credits',
-    tag: 'New',
-  },
-  {
-    id: 'upgrade-03',
-    title: 'Parallel Tooling',
-    description: 'Unlock two concurrent tool invocations per cycle.',
-    price: '420 credits',
-    tag: 'Pro',
-  },
-]
+interface UpgradesShopProps {
+  upgrades: UpgradeCatalogItem[]
+}
 
-export function UpgradesShop() {
+export function UpgradesShop({ upgrades }: UpgradesShopProps) {
   return (
     <Card className="border-border/60">
       <CardHeader>
@@ -46,7 +28,9 @@ export function UpgradesShop() {
               <p className="text-sm text-muted-foreground">{upgrade.description}</p>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-foreground">{upgrade.price}</span>
+              <span className="text-sm font-semibold text-foreground">
+                {upgrade.cost} credits
+              </span>
               <Button size="sm" variant="outline">
                 Purchase
               </Button>

@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils'
 
 type NodeStatus = 'Active' | 'Queued' | 'Locked'
 
-type GridNode = {
+export type GridNode = {
   id: string
   title: string
   tokens: string
@@ -30,50 +30,10 @@ type GridNode = {
   tier: string
 }
 
-const initialNodes: GridNode[] = [
-  {
-    id: 'ticket-brief',
-    title: 'Quest Brief',
-    tokens: '1.2k tokens',
-    status: 'Locked',
-    tier: 'Core',
-  },
-  {
-    id: 'ticket-persona',
-    title: 'Player Persona',
-    tokens: '840 tokens',
-    status: 'Active',
-    tier: 'Core',
-  },
-  {
-    id: 'ticket-world',
-    title: 'World Model',
-    tokens: '2.1k tokens',
-    status: 'Active',
-    tier: 'Expanded',
-  },
-  {
-    id: 'ticket-memory',
-    title: 'Memory Cache',
-    tokens: '560 tokens',
-    status: 'Queued',
-    tier: 'Core',
-  },
-  {
-    id: 'ticket-intel',
-    title: 'Mission Intel',
-    tokens: '310 tokens',
-    status: 'Queued',
-    tier: 'Aux',
-  },
-  {
-    id: 'ticket-rewards',
-    title: 'Reward Table',
-    tokens: '680 tokens',
-    status: 'Locked',
-    tier: 'Aux',
-  },
-]
+interface ContextGridProps {
+  nodes: GridNode[]
+  onReorder?: (nodes: GridNode[]) => void
+}
 
 const statusVariant: Record<NodeStatus, 'success' | 'info' | 'warning'> = {
   Active: 'success',
@@ -117,8 +77,12 @@ function SortableCard({ node }: { node: GridNode }) {
   )
 }
 
-export function ContextGrid() {
-  const [nodes, setNodes] = React.useState(initialNodes)
+export function ContextGrid({ nodes, onReorder }: ContextGridProps) {
+  const [orderedNodes, setOrderedNodes] = React.useState(nodes)
+
+  React.useEffect(() => {
+    setOrderedNodes(nodes)
+  }, [nodes])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -142,16 +106,21 @@ export function ContextGrid() {
             if (!over || active.id === over.id) {
               return
             }
-            setNodes((items) => {
+            setOrderedNodes((items) => {
               const oldIndex = items.findIndex((item) => item.id === active.id)
               const newIndex = items.findIndex((item) => item.id === over.id)
-              return arrayMove(items, oldIndex, newIndex)
+              const nextNodes = arrayMove(items, oldIndex, newIndex)
+              onReorder?.(nextNodes)
+              return nextNodes
             })
           }}
         >
-          <SortableContext items={nodes.map((node) => node.id)} strategy={rectSortingStrategy}>
+          <SortableContext
+            items={orderedNodes.map((node) => node.id)}
+            strategy={rectSortingStrategy}
+          >
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {nodes.map((node) => (
+              {orderedNodes.map((node) => (
                 <SortableCard key={node.id} node={node} />
               ))}
             </div>
