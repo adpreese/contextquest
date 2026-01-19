@@ -11,12 +11,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { ContextGrid, type GridNode } from '@/ui/ContextGrid'
-import { createInitialState } from '@/engine/state'
 import { SaveSlotsPanel } from '@/ui/SaveSlotsPanel'
 import { SelectedPanels } from '@/ui/SelectedPanels'
 import { ToolTimeline } from '@/ui/ToolTimeline'
 import { UpgradesShop } from '@/ui/UpgradesShop'
-import { useState } from 'react'
 
 type RunOutcome = 'success' | 'partial' | 'fail'
 
@@ -195,7 +193,10 @@ export function ContextQuestUI() {
               runStatus={runStatusLabel}
             />
 
-            <SaveSlotsPanel engineState={engineState} onLoadState={setEngineState} />
+            <SaveSlotsPanel
+              engineState={engine.state}
+              onLoadState={(state) => dispatch({ type: 'load_state', state })}
+            />
 
             <Card className="border-border/60">
               <CardHeader>

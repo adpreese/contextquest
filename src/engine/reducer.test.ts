@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ContextBlock, ToolDefinition } from '../shared/types';
+import { ContextBlockType } from '../shared/types';
 import { reduceEngineState } from './reducer';
 import { createInitialState } from './state';
 import { simulateToolInvocation } from './toolSimulation';
@@ -22,7 +23,7 @@ describe('reduceEngineState', () => {
     const initial = createInitialState();
     const block: ContextBlock = {
       id: 'block-1',
-      type: 'narrative',
+      type: ContextBlockType.Narrative,
       content: 'Hello',
       width: 1,
       height: 1,
