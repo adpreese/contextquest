@@ -6,9 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface UpgradesShopProps {
   upgrades: UpgradeCatalogItem[]
+  ownedUpgrades: string[]
+  credits: number
+  onPurchase: (upgradeId: string) => void
 }
 
-export function UpgradesShop({ upgrades }: UpgradesShopProps) {
+export function UpgradesShop({ upgrades, ownedUpgrades, credits, onPurchase }: UpgradesShopProps) {
   return (
     <Card className="border-border/60">
       <CardHeader>
@@ -31,8 +34,13 @@ export function UpgradesShop({ upgrades }: UpgradesShopProps) {
               <span className="text-sm font-semibold text-foreground">
                 {upgrade.cost} credits
               </span>
-              <Button size="sm" variant="outline">
-                Purchase
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={ownedUpgrades.includes(upgrade.id) || credits < upgrade.cost}
+                onClick={() => onPurchase(upgrade.id)}
+              >
+                {ownedUpgrades.includes(upgrade.id) ? 'Owned' : 'Purchase'}
               </Button>
             </CardContent>
           </Card>

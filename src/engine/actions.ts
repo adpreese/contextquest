@@ -1,16 +1,19 @@
 import type { ContextBlock, ModelSpec, ToolEvent } from '../shared/types';
-import type { GridPosition } from './state';
+import type { EngineState, GridPosition } from './state';
 
 export type EngineAction =
   | SelectTicketAction
   | SelectModelAction
   | InvokeToolAction
+  | UseToolAction
+  | PurchaseUpgradeAction
   | PlaceBlockAction
   | MoveBlockAction
   | RemoveBlockAction
   | StartRunAction
   | TickAction
-  | RunCompleteAction;
+  | RunCompleteAction
+  | LoadStateAction;
 
 interface ActionMetadata {
   timestamp?: string;
@@ -29,6 +32,16 @@ export interface SelectModelAction extends ActionMetadata {
 export interface InvokeToolAction extends ActionMetadata {
   type: 'invoke_tool';
   toolEvent: ToolEvent;
+}
+
+export interface UseToolAction extends ActionMetadata {
+  type: 'use_tool';
+  toolId: string;
+}
+
+export interface PurchaseUpgradeAction extends ActionMetadata {
+  type: 'purchase_upgrade';
+  upgradeId: string;
 }
 
 export interface PlaceBlockAction extends ActionMetadata {
@@ -58,4 +71,9 @@ export interface TickAction extends ActionMetadata {
 
 export interface RunCompleteAction extends ActionMetadata {
   type: 'run_complete';
+}
+
+export interface LoadStateAction extends ActionMetadata {
+  type: 'load_state';
+  state: EngineState;
 }

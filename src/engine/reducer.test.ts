@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ContextBlock, ToolDefinition } from '../shared/types';
+import { ContextBlockType } from '../shared/types';
 import { reduceEngineState } from './reducer';
 import { createInitialState } from './state';
 import { simulateToolInvocation } from './toolSimulation';
@@ -22,7 +23,7 @@ describe('reduceEngineState', () => {
     const initial = createInitialState();
     const block: ContextBlock = {
       id: 'block-1',
-      type: 'narrative',
+      type: ContextBlockType.Narrative,
       content: 'Hello',
       width: 1,
       height: 1,
@@ -35,13 +36,13 @@ describe('reduceEngineState', () => {
       block,
       position: { row: 0, column: 1 },
     });
-    expect(placed.state.blocks).toHaveLength(1);
+    expect(placed.state.blocks).toHaveLength(initial.blocks.length + 1);
 
     const removed = reduceEngineState(placed.state, {
       type: 'remove_block',
       blockId: 'block-1',
     });
-    expect(removed.state.blocks).toHaveLength(0);
+    expect(removed.state.blocks).toHaveLength(initial.blocks.length);
   });
 
   it('invokes a tool and stores evidence blocks', () => {
@@ -66,7 +67,7 @@ describe('reduceEngineState', () => {
       timestamp: '2026-01-18T00:00:00Z',
     });
 
-    expect(state.blocks).toHaveLength(1);
+    expect(state.blocks).toHaveLength(initial.blocks.length + 1);
     expect(events[0].type).toBe('tool_invoked');
   });
 });
