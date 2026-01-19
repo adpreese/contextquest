@@ -1,20 +1,24 @@
 export type ID = string;
 
-export enum TicketStatus {
-  New = 'new',
-  InProgress = 'in_progress',
-  Blocked = 'blocked',
-  Completed = 'completed',
-  Archived = 'archived',
-}
+export const TicketStatus = {
+  New: 'new',
+  InProgress: 'in_progress',
+  Blocked: 'blocked',
+  Completed: 'completed',
+  Archived: 'archived',
+} as const;
 
-export enum QuestStage {
-  Backlog = 'backlog',
-  Planning = 'planning',
-  Execution = 'execution',
-  Review = 'review',
-  Completed = 'completed',
-}
+export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus];
+
+export const QuestStage = {
+  Backlog: 'backlog',
+  Planning: 'planning',
+  Execution: 'execution',
+  Review: 'review',
+  Completed: 'completed',
+} as const;
+
+export type QuestStage = (typeof QuestStage)[keyof typeof QuestStage];
 
 export interface Tag {
   id: ID;
@@ -41,14 +45,16 @@ export interface ContextBlock {
   createdAt?: string;
 }
 
-export enum ContextBlockType {
-  Narrative = 'narrative',
-  System = 'system',
-  User = 'user',
-  Tool = 'tool',
-  Memory = 'memory',
-  Reference = 'reference',
-}
+export const ContextBlockType = {
+  Narrative: 'narrative',
+  System: 'system',
+  User: 'user',
+  Tool: 'tool',
+  Memory: 'memory',
+  Reference: 'reference',
+} as const;
+
+export type ContextBlockType = (typeof ContextBlockType)[keyof typeof ContextBlockType];
 
 export interface Ticket {
   id: ID;
@@ -62,11 +68,13 @@ export interface Ticket {
   updatedAt?: string;
 }
 
-export enum VariantType {
-  Baseline = 'baseline',
-  Experimental = 'experimental',
-  Production = 'production',
-}
+export const VariantType = {
+  Baseline: 'baseline',
+  Experimental: 'experimental',
+  Production: 'production',
+} as const;
+
+export type VariantType = (typeof VariantType)[keyof typeof VariantType];
 
 export interface Variant {
   id: ID;
@@ -79,12 +87,14 @@ export interface Variant {
   scoring?: ScoringProfile;
 }
 
-export enum ModelProvider {
-  OpenAI = 'openai',
-  Anthropic = 'anthropic',
-  Google = 'google',
-  Custom = 'custom',
-}
+export const ModelProvider = {
+  OpenAI: 'openai',
+  Anthropic: 'anthropic',
+  Google: 'google',
+  Custom: 'custom',
+} as const;
+
+export type ModelProvider = (typeof ModelProvider)[keyof typeof ModelProvider];
 
 export interface ModelSpec {
   id: ID;
@@ -147,13 +157,15 @@ export interface UpgradeEffect {
   target: UpgradeTarget;
 }
 
-export enum UpgradeTarget {
-  TokenBudget = 'token_budget',
-  Latency = 'latency',
-  Accuracy = 'accuracy',
-  Cost = 'cost',
-  ContextQuality = 'context_quality',
-}
+export const UpgradeTarget = {
+  TokenBudget: 'token_budget',
+  Latency: 'latency',
+  Accuracy: 'accuracy',
+  Cost: 'cost',
+  ContextQuality: 'context_quality',
+} as const;
+
+export type UpgradeTarget = (typeof UpgradeTarget)[keyof typeof UpgradeTarget];
 
 export interface EngineEvent<TPayload = Record<string, unknown>> {
   id: ID;
@@ -164,21 +176,23 @@ export interface EngineEvent<TPayload = Record<string, unknown>> {
   variantId?: ID;
 }
 
-export enum EngineEventType {
-  TicketCreated = 'ticket_created',
-  TicketUpdated = 'ticket_updated',
-  TicketSelected = 'ticket_selected',
-  ModelSelected = 'model_selected',
-  VariantSelected = 'variant_selected',
-  ToolInvoked = 'tool_invoked',
-  BlockAdded = 'block_added',
-  BlockMoved = 'block_moved',
-  BlockRemoved = 'block_removed',
-  ScoreComputed = 'score_computed',
-  RunStarted = 'run_started',
-  RunTicked = 'run_ticked',
-  RunCompleted = 'run_completed',
-}
+export const EngineEventType = {
+  TicketCreated: 'ticket_created',
+  TicketUpdated: 'ticket_updated',
+  TicketSelected: 'ticket_selected',
+  ModelSelected: 'model_selected',
+  VariantSelected: 'variant_selected',
+  ToolInvoked: 'tool_invoked',
+  BlockAdded: 'block_added',
+  BlockMoved: 'block_moved',
+  BlockRemoved: 'block_removed',
+  ScoreComputed: 'score_computed',
+  RunStarted: 'run_started',
+  RunTicked: 'run_ticked',
+  RunCompleted: 'run_completed',
+} as const;
+
+export type EngineEventType = (typeof EngineEventType)[keyof typeof EngineEventType];
 
 export interface ScoringProfile {
   id: ID;
@@ -192,13 +206,15 @@ export interface ScoreWeight {
   weight: number;
 }
 
-export enum ScoreMetric {
-  Relevance = 'relevance',
-  Completeness = 'completeness',
-  Accuracy = 'accuracy',
-  Efficiency = 'efficiency',
-  Safety = 'safety',
-}
+export const ScoreMetric = {
+  Relevance: 'relevance',
+  Completeness: 'completeness',
+  Accuracy: 'accuracy',
+  Efficiency: 'efficiency',
+  Safety: 'safety',
+} as const;
+
+export type ScoreMetric = (typeof ScoreMetric)[keyof typeof ScoreMetric];
 
 export interface ScoreSummary {
   total: number;
