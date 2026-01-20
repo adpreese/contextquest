@@ -8,7 +8,7 @@ import type { EngineState } from '../engine/state';
 
 const parseTimestamp = (token?: string): string => {
   if (!token) {
-    return new Date().toISOString();
+    return '';
   }
   if (/^\d+$/.test(token)) {
     return new Date(Number(token)).toISOString();

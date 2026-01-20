@@ -14,6 +14,44 @@ const canFitBlock = (
   position.row + block.height <= state.grid.rows &&
   position.column + block.width <= state.grid.columns;
 
+const canPlaceBlock = (
+  state: EngineState,
+  position: { row: number; column: number },
+  block: { id: string; width: number; height: number },
+): boolean => {
+  if (!canFitBlock(state, position, block)) {
+    return false;
+  }
+  const occupied = new Set<string>();
+  Object.entries(state.grid.placements).forEach(([blockId, placement]) => {
+    if (blockId === block.id) {
+      return;
+    }
+    const placedBlock = state.blocks.find((item) => item.id === blockId);
+    if (!placedBlock) {
+      return;
+    }
+    for (let row = placement.row; row < placement.row + placedBlock.height; row += 1) {
+      for (
+        let column = placement.column;
+        column < placement.column + placedBlock.width;
+        column += 1
+      ) {
+        occupied.add(`${row}:${column}`);
+      }
+    }
+  });
+
+  for (let row = position.row; row < position.row + block.height; row += 1) {
+    for (let column = position.column; column < position.column + block.width; column += 1) {
+      if (occupied.has(`${row}:${column}`)) {
+        return false;
+      }
+    }
+  }
+  return true;
+};
+
 const nextEvent = (
   state: EngineState,
   type: EngineEventType,
@@ -146,6 +184,9 @@ export const reduceEngineState = (
       if (state.runState.remainingTools <= 0) {
         return { state, events: [] };
       }
+      if (state.economy.credits < state.economy.toolCost) {
+        return { state, events: [] };
+      }
       const tool = state.tools.find((item) => item.id === action.toolId);
       if (!tool) {
         return { state, events: [] };
@@ -247,7 +288,7 @@ export const reduceEngineState = (
       };
     }
     case 'place_block': {
-      if (!canFitBlock(state, action.position, action.block)) {
+      if (!canPlaceBlock(state, action.position, action.block)) {
         return { state, events: [] };
       }
       const { event, eventCounter } = nextEvent(
@@ -275,7 +316,7 @@ export const reduceEngineState = (
     }
     case 'move_block': {
       const block = state.blocks.find((item) => item.id === action.blockId);
-      if (!block || !canFitBlock(state, action.position, block)) {
+      if (!block || !canPlaceBlock(state, action.position, block)) {
         return { state, events: [] };
       }
       const { event, eventCounter } = nextEvent(
@@ -367,6 +408,9 @@ export const reduceEngineState = (
       };
     }
     case 'run_complete': {
+      if (state.runState.status !== 'running') {
+        return { state, events: [] };
+      }
       const outcome = computeOutcome(state);
       const creditsDelta =
         outcome === 'success' ? 120 : outcome === 'partial' ? 40 : -60;

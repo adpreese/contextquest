@@ -56,11 +56,7 @@ const engineReducer = (snapshot: EngineSnapshot, action: EngineAction): EngineSn
       events: [],
     }
   }
-  const timestampedAction = {
-    ...action,
-    timestamp: action.timestamp ?? new Date().toISOString(),
-  }
-  const { state, events } = reduceEngineState(snapshot.state, timestampedAction)
+  const { state, events } = reduceEngineState(snapshot.state, action)
   return {
     state,
     events: [...snapshot.events, ...events],
